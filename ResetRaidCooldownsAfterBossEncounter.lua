@@ -22,8 +22,8 @@ local PrintD = PrintUnderlineWithDashes
 local function OnCleanCreatureOnCombatEntryTimestamp()
     -- remove any keys with values greater than 15 minutes (900000) from the table
     for key, value in pairs(creatureOnCombatEntryTimestamp) do
-        if value >= 15*IN_MINUTES_IN_MILLISECONDS then
-            delete(creatureOnCombatEntryTimestamp, key)
+        if value >= (15*IN_MINUTES_IN_MILLISECONDS) then
+            creatureOnCombatEntryTimestamp[key] = nil -- remove key
         end
     end
 end
