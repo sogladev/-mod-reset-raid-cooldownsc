@@ -3,7 +3,40 @@
  */
 #include "Pet.h"
 #include "Player.h"
+#include "Config.h"
 #include "ScriptMgr.h"
+
+
+struct InstanceIdBossIdKey
+{
+    uint32 InstanceId;
+    uint32 id;
+    InstanceIdBossIdKey(uint32 instanceId, uint32 id) : InstanceId(instanceId), id(id) {}
+    // Overload the less-than operator for use in std::map
+    bool operator<(const InstanceIdBossIdKey& other) const
+    {
+        return std::tie(InstanceId, id) < std::tie(other.InstanceId, other.id);
+    }
+};
+
+std::map<InstanceIdBossIdKey, uint32> instanceIdBossIdCombatStartedTimeMap;
+
+void SetCombatStartedTime(uint32 instanceId, uint32 id, uint32 currTime)
+{
+    InstanceIdBossIdKey key(instanceId, id);
+    instanceIdBossIdCombatStartedTimeMap[key] = currTime;
+}
+
+uint32 GetCombatStartedTime(uint32 instanceId, uint32 id)
+{
+    InstanceIdBossIdKey key(instanceId, id);
+    auto it = instanceIdBossIdCombatStartedTimeMap.find(key);
+    if (it != instanceIdBossIdCombatStartedTimeMap.end())
+    {
+        return it->second;
+    }
+    return 0;
+}
 
 class global_reset_raid_cooldowns : public GlobalScript
 {
@@ -16,15 +49,46 @@ public:
         {
             return;
         }
-        LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: {} ({}{}) id: {} old: {} new: {}",
+        if (!instance->GetInstanceId())
+        {
+            return;
+        }
+        LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: {} ({}-{}) id: {} old: {} new: {}",
             instance->GetMapName(),
             instance->GetId(),
-            instance->GetInstanceId() ? "-" + std::to_string(instance->GetInstanceId()) : "",
-            id, oldState, newState
-        );
+            std::to_string(instance->GetInstanceId()),
+            id, oldState, newState);
+        if (newState == IN_PROGRESS)
+        {
+            // unique key: InstanceId, id
+            uint32 currTime = getMSTime()
+            SetCombatStartedTime(instance->GetId(), id, currTime);
+            LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{} value: {}",
+                instance->GetMapName(),
+                instance->GetId(),
+                std::to_string(instance->GetInstanceId()),
+                std::to_string(instance->GetInstanceId()),
+                id,
+                currTime
+            );
+            return;
+        }
         bool isAllowedStateChange = oldState == IN_PROGRESS && (newState == DONE || newState == FAIL || newState == NOT_STARTED);
         if (!isAllowedStateChange)
         {
+            return;
+        }
+        bool hasRequiredTimePassed = false;
+        if (uint32 combatStartedTime = GetCombatStartedTime(instance->GetId(), id))
+        {
+            if (GetMSTimeDiffToNow(combatStartedTime) >= (sConfigMgr->GetOption<uint32>("ResetRaidCooldowns.CombatTimeRequired", 30) * IN_MILLISECONDS))
+            {
+                hasRequiredTimePassed = true;
+            }
+        }
+        if (!hasRequiredTimePassed)
+        {
+            LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Not enough time has passed!");
             return;
         }
         instance->DoForAllPlayers([&](Player* player)
@@ -32,7 +96,7 @@ public:
             LOG_INFO("module", "mod-reset-raid-cooldowns::DoForAllPlayers: {}", player->GetName());
             // Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
             player->RemoveArenaSpellCooldowns(true); // includes pets
-            // Remove cooldowns
+            // Remove cooldowns that were not included in the above
             player->RemoveCategoryCooldown(26); // rebirth
             player->RemoveSpellCooldown(42650, true); // army of the dead
             player->RemoveSpellCooldown(2062, true); // earth elemental totem

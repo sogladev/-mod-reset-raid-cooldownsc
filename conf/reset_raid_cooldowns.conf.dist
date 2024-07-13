@@ -14,3 +14,12 @@
 #                     1 - Enabled
 #
 ResetRaidCooldowns.Enable = 1
+
+#
+#    ResetRaidCooldowns.CombatTimeRequired
+#        Description: required amount of time, in seconds, to be in combat with boss
+#        Default:     30
+#
+#
+
+ResetRaidCooldowns.CombatTimeRequired = 30
