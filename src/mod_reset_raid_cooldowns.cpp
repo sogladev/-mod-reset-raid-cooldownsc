@@ -6,37 +6,39 @@
 #include "Config.h"
 #include "ScriptMgr.h"
 
-
-struct InstanceIdBossIdKey
+class InstanceCombatStartedTimeManager
 {
-    uint32 InstanceId;
-    uint32 id;
-    InstanceIdBossIdKey(uint32 instanceId, uint32 id) : InstanceId(instanceId), id(id) {}
-    // Overload the less-than operator for use in std::map
-    bool operator<(const InstanceIdBossIdKey& other) const
+public:
+    void SetCombatStarted(uint32 instanceId, uint32 id)
     {
-        return std::tie(InstanceId, id) < std::tie(other.InstanceId, other.id);
+        _InstanceIdBossIdKey key(instanceId, id);
+        _instanceIdBossIdCombatStartedTimeMap[key] = getMSTime();
     }
+
+    uint32 GetCombatStartedTime(uint32 instanceId, uint32 id) const
+    {
+        _InstanceIdBossIdKey key(instanceId, id);
+        auto it = _instanceIdBossIdCombatStartedTimeMap.find(key);
+        if (it != _instanceIdBossIdCombatStartedTimeMap.end())
+        {
+            return it->second;
+        }
+        return 0;
+    }
+
+private:
+    struct _InstanceIdBossIdKey
+    {
+        uint32 InstanceId;
+        uint32 id;
+        _InstanceIdBossIdKey(uint32 instanceId, uint32 id) : InstanceId(instanceId), id(id) {}
+        bool operator<(const _InstanceIdBossIdKey& other) const
+        {
+            return std::tie(InstanceId, id) < std::tie(other.InstanceId, other.id);
+        }
+    };
+    std::map<_InstanceIdBossIdKey, uint32> _instanceIdBossIdCombatStartedTimeMap;
 };
-
-std::map<InstanceIdBossIdKey, uint32> instanceIdBossIdCombatStartedTimeMap;
-
-void SetCombatStartedTime(uint32 instanceId, uint32 id, uint32 currTime)
-{
-    InstanceIdBossIdKey key(instanceId, id);
-    instanceIdBossIdCombatStartedTimeMap[key] = currTime;
-}
-
-uint32 GetCombatStartedTime(uint32 instanceId, uint32 id)
-{
-    InstanceIdBossIdKey key(instanceId, id);
-    auto it = instanceIdBossIdCombatStartedTimeMap.find(key);
-    if (it != instanceIdBossIdCombatStartedTimeMap.end())
-    {
-        return it->second;
-    }
-    return 0;
-}
 
 class global_reset_raid_cooldowns : public GlobalScript
 {
@@ -60,16 +62,13 @@ public:
             id, oldState, newState);
         if (newState == IN_PROGRESS)
         {
-            // unique key: InstanceId, id
-            uint32 currTime = getMSTime()
-            SetCombatStartedTime(instance->GetId(), id, currTime);
-            LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{} value: {}",
+            _timeManager.SetCombatStarted(instance->GetId(), id); // unique key: InstanceId, id
+            LOG_INFO("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{}",
                 instance->GetMapName(),
                 instance->GetId(),
                 std::to_string(instance->GetInstanceId()),
                 std::to_string(instance->GetInstanceId()),
-                id,
-                currTime
+                id
             );
             return;
         }
@@ -79,7 +78,7 @@ public:
             return;
         }
         bool hasRequiredTimePassed = false;
-        if (uint32 combatStartedTime = GetCombatStartedTime(instance->GetId(), id))
+        if (uint32 combatStartedTime = _timeManager.GetCombatStartedTime(instance->GetId(), id)) // unique key: InstanceId, id
         {
             if (GetMSTimeDiffToNow(combatStartedTime) >= (sConfigMgr->GetOption<uint32>("ResetRaidCooldowns.CombatTimeRequired", 30) * IN_MILLISECONDS))
             {
@@ -115,6 +114,9 @@ public:
            }
         });
     }
+
+private:
+    InstanceCombatStartedTimeManager _timeManager;
 };
 
 void AddSC_reset_raid_cooldowns_spell_script()
