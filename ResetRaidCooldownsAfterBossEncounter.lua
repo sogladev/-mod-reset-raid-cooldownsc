@@ -35,6 +35,7 @@ local IronCouncilEntries = {[32927] = true, [32857] = true, [32867] = true} -- R
 local creatureOnCombatEntryTimestamp = {} -- stores guid, timestamp pairs
 local instanceResetTimestamp = {} -- stores instanceId, timestamp pairs
 
+
 -- print line surrounded by dashes (-)
 local function PrintUnderlineWithDashes(line)
     PrintDebug(string.rep("-", string.len(line)))
@@ -215,7 +216,7 @@ end
 CreateLuaEvent(OnCleanCreatureOnCombatEntryTimestamp, 15*IN_MINUTES_IN_MILLISECONDS, 0) -- repeats infinitely
 
 
-local RESET_CONFIG = {
+local CREATURE_CONFIG = {
 ------------------------------
 --  WRATH
 ------------------------------
@@ -523,7 +524,7 @@ local RESET_CONFIG = {
     [15687] = true, -- Moroes
     [15690] = true, -- Prince Malchezaar
     [15691] = true, -- The Curator
-    [16151] = true, -- Midnight
+    -- [16151] = true, -- Midnight
     [16152] = true, -- Attumen the Huntsman
     [16457] = true, -- Maiden of Virtue
     [16524] = true, -- Shade of Aran
@@ -645,10 +646,10 @@ local RESET_CONFIG = {
     -- [29179] = true, -- Leonid Barthalomew the Revered
 }
 
-for entry, shouldReset in pairs(RESET_CONFIG) do
+for entry, shouldReset in pairs(CREATURE_CONFIG) do
     if shouldReset then
         RegisterCreatureEvent(entry, CREATURE_EVENT_ON_ENTER_COMBAT, OnCreatureEventOnEnterCombat)
         RegisterCreatureEvent(entry, CREATURE_EVENT_ON_RESET, OnCreatureEventOnReset)
     end
 end
-RESET_CONFIG = nil
+CREATURE_CONFIG = nil
