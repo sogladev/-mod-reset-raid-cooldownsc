@@ -1,14 +1,22 @@
 # AzerothCore Module Reset Raid Cooldowns
 
-- Latest build status with azerothcore:
+~~- Latest build status with azerothcore:~~
 
 [![Build Status](
 https://github.com/sogladev/mod-reset-raid-cooldowns/actions/workflows/core-build.yml/badge.svg?branch=master&event=push)](https://github.com/sogladev/mod-reset-raid-cooldowns)
 
-This is a module for [AzerothCore](http://www.azerothcore.org) that changes Demonic Pact to behave more like Wrath Classic:
+This is a module for [AzerothCore](http://www.azerothcore.org) that removes Sated and Exhaustion debuffs, and resets player cooldowns after raid encounters to emulate how it was done in Wrath Classic
 
-- Lower ICD from 20 seconds to 5 seconds (adjustable)
-- No longer overwrites stronger Demonic Pact auras, unless the aura has less than 10 seconds remaining
+Current implementation is done in Eluna and is using creature reset and enter combat hooks
+
+TODO: write cpp script with `OnAfterUpdateEncounterState` hook instead
+
+## What spells are reset?
+cooldowns on spells that have less than 10 minutes of cooldown from the Player, similarly to when you enter an arena AND custom defined spells (id) in the configuration
+
+## For which creatures is there a reset?
+Every creature (entry) that is enabled in the configuration
+
 
 ## How to install
 https://www.azerothcore.org/wiki/installing-a-module
@@ -16,6 +24,28 @@ https://www.azerothcore.org/wiki/installing-a-module
 requires: https://github.com/azerothcore/mod-eluna
 
 place in `lua_scripts/` directory
+
+## Configuration
+can be done by modifying .lua file
+
+Enable or add spells by appending to `COOLDOWN_CONFIG` table
+```
+COOLDOWN_CONFIG = {
+    [48788] = false, -- lay on hands, default: false
+    ...
+}
+```
+
+Enable or disable resets for creatures (entry) by modifying `CREATURE_CONFIG`.
+```
+CREATURE_CONFIG = {
+    [28860] = true, -- Sartharion <-- ENABLED
+    -- [30449] = true, -- Vesperon <-- DISABLED
+    [30449] = false, -- Vesperon <-- DISABLED
+    ...
+}
+```
+
 
 <!---
 Requires source recompilation
