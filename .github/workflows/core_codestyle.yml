@@ -5,7 +5,6 @@ on:
 
 jobs:
   check-codestyle:
-    if: ${{ false }}  # disable for now
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
