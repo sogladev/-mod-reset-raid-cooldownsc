@@ -4,7 +4,7 @@
 -- if creature is not on cooldown: prevent triggering too frequently
 
 -- Config
-local AMOUNT_OF_COMBAT_REQUIRED_IN_SECONDS = 1 -- default: 30
+local AMOUNT_OF_COMBAT_REQUIRED_IN_SECONDS = 30 -- default: 30
 local AMOUNT_OF_COOLDOWN_IN_SECONDS = 30 -- default: 30
 local AMOUNT_OF_TIME_BETWEEN_CLEAN_COMBAT_ENTRY_TABLE_IN_MINUTES = 15 -- default: 15
 local DO_PLAYER_IN_RANGE_CHECK = true -- default: true
