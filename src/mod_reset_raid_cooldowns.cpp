@@ -32,15 +32,17 @@ public:
             LOG_INFO("module", "mod-reset-raid-cooldowns::DoForAllPlayers: {}", player->GetName());
             // Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
             player->RemoveArenaSpellCooldowns(true); // includes pets
-            // Remove Exhaustion and Sated
-            player->RemoveAura(57723); // Exhaustion
-            player->RemoveAura(57724); // Sated
+            // Remove cooldowns
             player->RemoveCategoryCooldown(26); // rebirth
             player->RemoveSpellCooldown(42650, true); // army of the dead
             player->RemoveSpellCooldown(2062, true); // earth elemental totem
             player->RemoveSpellCooldown(2894, true); // fire elemental totem
             player->RemoveSpellCooldown(1122, true); // inferno
             // player->RemoveSpellCooldown(48788, true); // lay on hands
+            // Remove Exhaustion and Sated from player
+            player->RemoveAura(57723); // Exhaustion
+            player->RemoveAura(57724); // Sated
+            // Remove Exhaustion and Sated from pet
            if (Pet* pet = player->GetPet())
            {
                 LOG_INFO("module", "mod-reset-raid-cooldowns::DoForAllPlayers::Pet: {}", pet->GetName());
