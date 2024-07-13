@@ -1,0 +1,25 @@
+#
+# Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
+#
+
+[worldserver]
+
+########################################
+# ResetRaidCooldowns configuration
+########################################
+#
+#    ResetRaidCooldowns.Enable
+#        Description: Enable ResetRaidCooldowns
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+ResetRaidCooldowns.Enable = 1
+
+#
+#    ResetRaidCooldowns.CombatTimeRequired
+#        Description: required amount of time, in seconds, to be in combat with boss
+#        Default:     30
+#
+#
+
+ResetRaidCooldowns.CombatTimeRequired = 30

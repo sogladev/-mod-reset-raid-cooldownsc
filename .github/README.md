@@ -9,7 +9,10 @@ This is a module for [AzerothCore](http://www.azerothcore.org) that removes Sate
 
 Current implementation is done in Eluna and is using creature reset and enter combat hooks
 
-TODO: write cpp script with `OnAfterUpdateEncounterState` hook instead
+(WIP): write cpp script `OnBeforeSetBossState` hook instead
+- Reset cooldowns and remove exhaustion/sated after 30 seconds boss encounter
+- TODO: Add customization which spells with config
+- TODO: Configure enable/disable encounters per map like Sartharion's dragons
 
 ## What spells are reset?
 cooldowns on spells that have less than 10 minutes of cooldown from the Player, similarly to when you enter an arena AND custom defined spells (id) in the configuration
