@@ -5,10 +5,11 @@
 [![Build Status](
 https://github.com/sogladev/mod-reset-raid-cooldowns/actions/workflows/core-build.yml/badge.svg?branch=master&event=push)](https://github.com/sogladev/mod-reset-raid-cooldowns)
 
-This is a module for [AzerothCore](http://www.azerothcore.org) that changes Demonic Pact to behave more like Wrath Classic:
+This is a module for [AzerothCore](http://www.azerothcore.org) that resets Sated/Exhaustion and resets raid cooldowns to emulate how it was done in Wrath Classic:
 
-- Lower ICD from 20 seconds to 5 seconds (adjustable)
-- No longer overwrites stronger Demonic Pact auras, unless the aura has less than 10 seconds remaining
+Current (WIP) implementation is done in Eluna and is using creature reset and enter combat hooks
+
+TODO: write cpp script with `OnAfterUpdateEncounterState` hook instead
 
 ## How to install
 https://www.azerothcore.org/wiki/installing-a-module
