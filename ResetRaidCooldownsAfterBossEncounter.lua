@@ -54,7 +54,7 @@ local function ResetPlayerCooldowns(player)
     for spell, shouldReset in pairs(COOLDOWN_CONFIG) do
         if shouldReset then
             -- Check if the spell is a category or a specific spell ID
-            if spell == 26 then -- gategory rebirth
+            if spell == 26 then -- category rebirth
                 player:ResetTypeCooldowns(spell, true) -- send update for category
             else
                 player:ResetSpellCooldown(spell, true) -- send update for specific spell
