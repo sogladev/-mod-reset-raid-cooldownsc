@@ -2,8 +2,10 @@ name: core-build
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
   pull_request:
+    branches:  
+      - 'main'
   workflow_dispatch:
 
 jobs:
