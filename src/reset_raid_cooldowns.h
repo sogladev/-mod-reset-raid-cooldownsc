@@ -38,11 +38,11 @@ public:
     std::vector<uint32> spells;
     uint32 combatTimeRequiredInSeconds;
 
-    typedef std::unordered_map<uint32, bool> MapIdEnableSettings;
+    typedef std::map<uint32, bool> MapIdEnableSettings;
     MapIdEnableSettings mapIdEnableSettings;
-    typedef std::unordered_map<MapIdBossIdKey, bool> MapIdBossIdDisableSettings;
+    typedef std::map<MapIdBossIdKey, bool> MapIdBossIdDisableSettings;
     MapIdBossIdDisableSettings mapIdBossIdDisableSettings;
-    typedef std::unordered_map<InstanceIdBossIdKey, uint32> InstanceIdBossIdCombatStartedTimeMap;
+    typedef std::map<InstanceIdBossIdKey, uint32> InstanceIdBossIdCombatStartedTimeMap;
     InstanceIdBossIdCombatStartedTimeMap instanceIdBossIdCombatStartedTimeMap;
 
     void LoadSpellsSettings(std::string const& spellsSettingsString);
