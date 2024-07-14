@@ -41,7 +41,7 @@ public:
         LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: {} ({}-{}) id: {} old: {} new: {}", instance->GetMapName(), mapId, std::to_string(instanceId), bossId, oldState, newState);
         if (newState == IN_PROGRESS)
         {
-            sResetRaidCooldowns->SetCombatStarted(mapId, bossId);
+            sResetRaidCooldowns->SetCombatStarted(instanceId, bossId);
             LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{}", instance->GetMapName(), mapId, std::to_string(instanceId), std::to_string(instanceId), bossId);
             return;
         }
