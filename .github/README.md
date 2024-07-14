@@ -1,35 +1,53 @@
 # AzerothCore Module Reset Raid Cooldowns
 
-~~- Latest build status with azerothcore:~~
+- Latest build status with azerothcore:
 
 [![Build Status](
 https://github.com/sogladev/mod-reset-raid-cooldowns/actions/workflows/core-build.yml/badge.svg?branch=master&event=push)](https://github.com/sogladev/mod-reset-raid-cooldowns)
 
 This is a module for [AzerothCore](http://www.azerothcore.org) that removes Sated and Exhaustion debuffs, and resets player cooldowns after raid encounters to emulate how it was done in Wrath Classic
 
-Current implementation is done in Eluna and is using creature reset and enter combat hooks
+This projects hosts 2 implementations which use different methods and could, but is not recommended, be used together
 
-(WIP): write cpp script `OnBeforeSetBossState` hook instead
-- Reset cooldowns and remove exhaustion/sated after 30 seconds boss encounter
-- TODO: Add customization which spells with config
-- TODO: Configure enable/disable encounters per map like Sartharion's dragons
+1. Eluna (lua): uses creature enter combat and reset hooks
+2. cpp: uses `OnBeforeSetBossState` hooks
 
-## What spells are reset?
-cooldowns on spells that have less than 10 minutes of cooldown from the Player, similarly to when you enter an arena AND custom defined spells (id) in the configuration
+## cpp
 
-## For which creatures is there a reset?
-Every creature (entry) that is enabled in the configuration
+cpp: uses `OnBeforeSetBossState` hooks
 
+This script only runs for instances.
 
-## How to install
+All configuration can be done through the config file `.conf`
+
+When a boss state is changed from IN_PROGRESS to  DONE, FAIL or NOT_STARTED cooldowns and exhausted/sated debuffs will be cleared for all players and their pets that are present in the map.
+
+Conditions such as how long a boss should be in combat for, for which instances, for which bosses, which spells/categories, whether pets also reset, if all short cooldowns are reset similarly to when you enter arena, can be configured by modifying the config file
+
+### How to remove
+
+disable in config
+
+or delete cpp and conf
+
+no database changes are made
+
+### How to install
 https://www.azerothcore.org/wiki/installing-a-module
 
-requires: https://github.com/azerothcore/mod-eluna
+no database changes are required
 
-place in `lua_scripts/` directory
+requires config file
 
-## Configuration
-can be done by modifying .lua file
+## lua
+
+Eluna (lua): uses creature enter combat and reset hooks.
+
+The cpp script is prefered for resets in raids like wrath classic but lua allows the script to also work in the open world and on any creature.
+
+Similary to cpp, you can edit which spells are reset. You can choose for which creatures, by entry, spells are reset
+
+configuration can be done by modifying .lua file
 
 Enable or add spells by appending to `COOLDOWN_CONFIG` table
 ```
@@ -49,35 +67,18 @@ CREATURE_CONFIG = {
 }
 ```
 
+### How to install
+https://www.azerothcore.org/wiki/installing-a-module
 
-<!---
-Requires source recompilation
+requires: https://github.com/azerothcore/mod-eluna
 
-Apply database changes: `data/sql/db-world/base/demonic_pact_classic.sql`
-```
--- reduce Internal Cooldown from 20 seconds (20000) to 5 seconds (5000), some sources say 1 second (1000)
-SET @ICD:=5000;
-UPDATE `spell_proc_event` SET `Cooldown`=@ICD WHERE `entry` IN (53646, 54909);
-DELETE FROM `spell_script_names` WHERE `spell_id` = 48090;
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (48090, 'spell_warl_demonic_pact_classic');
-```
--->
+place in `lua_scripts/` directory
 
-## How to remove
+### How to remove
 
 remove from `lua_scripts/` directory
 
-<!---
-1. Undo database changes: `optional/undo_demonic_pact_classic.sql`
-```
--- restore Internal Cooldown to 20 seconds (20000)
-SET @ICD:=20000;
-UPDATE `spell_proc_event` SET `Cooldown`=@ICD WHERE `entry` IN (53646, 54909);
-DELETE FROM `spell_script_names` WHERE `spell_id` = 48090;
-```
-
-2. Remove `mod-demonic-pact-classic` folder
--->
+no database changes are made
 
 ## How to create your own module
 
