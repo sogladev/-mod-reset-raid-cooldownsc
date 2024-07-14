@@ -87,7 +87,7 @@ void ResetRaidCooldowns::LoadMapIdBossIdDisableSettings(std::string const& mapId
     }
 }
 
-bool ResetRaidCooldowns::IsMapBossEnabled(uint32 mapId, uint32 bossId)
+bool ResetRaidCooldowns::IsMapBossEnabled(uint32 mapId, uint32 bossId) const
 {
     if (!sResetRaidCooldowns->mapIdEnableSettings[mapId])
     {

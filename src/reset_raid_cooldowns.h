@@ -47,7 +47,7 @@ public:
     void LoadMapIdEnableSettings(std::string const& mapIdEnableSettingsString);
     void LoadMapIdBossIdDisableSettings(std::string const& mapIdBossIdDisableSettingsString);
 
-    bool IsMapBossEnabled(uint32 mapId, uint32 bossId);
+    bool IsMapBossEnabled(uint32 mapId, uint32 bossId) const;
     void SetCombatStarted(uint32 instanceId, uint32 bossId);
     uint32 GetCombatStartedTime(uint32 instanceId, uint32 bossId) const;
 };
