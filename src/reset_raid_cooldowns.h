@@ -38,12 +38,9 @@ public:
     std::vector<uint32> spells;
     uint32 combatTimeRequiredInSeconds;
 
-    typedef std::map<uint32, bool> MapIdEnableSettings;
-    MapIdEnableSettings mapIdEnableSettings;
-    typedef std::map<MapIdBossIdKey, bool> MapIdBossIdDisableSettings;
-    MapIdBossIdDisableSettings mapIdBossIdDisableSettings;
-    typedef std::map<InstanceIdBossIdKey, uint32> InstanceIdBossIdCombatStartedTimeMap;
-    InstanceIdBossIdCombatStartedTimeMap instanceIdBossIdCombatStartedTimeMap;
+    std::map<uint32, bool> mapIdEnableSettings;
+    std::map<MapIdBossIdKey, bool> mapIdBossIdDisableSettings;
+    std::map<InstanceIdBossIdKey, uint32> instanceIdBossIdCombatStartedTimeMap;
 
     void LoadSpellsSettings(std::string const& spellsSettingsString);
     void LoadCategoriesSettings(std::string const& categoriesSettingsString);
