@@ -24,6 +24,14 @@ When a boss state is changed from IN_PROGRESS to  DONE, FAIL or NOT_STARTED cool
 
 Conditions such as how long a boss should be in combat for, for which instances, for which bosses, which spells/categories, whether pets also reset, if all short cooldowns are reset similarly to when you enter arena, can be configured by modifying the config file
 
+### How to install
+https://www.azerothcore.org/wiki/installing-a-module
+
+no database changes are required
+
+requires config file
+
+
 ### How to remove
 
 disable in config
@@ -31,13 +39,6 @@ disable in config
 or delete cpp and conf
 
 no database changes are made
-
-### How to install
-https://www.azerothcore.org/wiki/installing-a-module
-
-no database changes are required
-
-requires config file
 
 ## lua
 
