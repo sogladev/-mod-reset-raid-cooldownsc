@@ -26,6 +26,34 @@ uint32 ResetRaidCooldowns::GetCombatStartedTime(uint32 instanceId, uint32 bossId
     return 0;
 }
 
+void ResetRaidCooldowns::LoadSpellsSettings(std::string const& spellsSettingsString)
+{
+    std::string delimitedValue;
+    std::stringstream spellsSettingsStream;
+
+    spellsSettingsStream.str(spellsSettingsString);
+    while (std::getline(spellsSettingsStream, delimitedValue, ','))
+    {
+        uint32 spellId = atoi(delimitedValue.c_str());
+        LOG_INFO("module", "mod-reset-raid-cooldowns::LoadSpellsSettings:SpellId {}", spellId);
+        sResetRaidCooldowns->spells.push_back(spellId);
+    }
+}
+
+void ResetRaidCooldowns::LoadCategoriesSettings(std::string const& categoriesSettingsString)
+{
+    std::string delimitedValue;
+    std::stringstream categoriesSettingsStream;
+
+    categoriesSettingsStream.str(categoriesSettingsString);
+    while (std::getline(categoriesSettingsStream, delimitedValue, ','))
+    {
+        uint32 categoryId = atoi(delimitedValue.c_str());
+        LOG_INFO("module", "mod-reset-raid-cooldowns::LoadCategoriesSettings:CategoryId {}", categoryId);
+        sResetRaidCooldowns->categories.push_back(categoryId);
+    }
+}
+
 void ResetRaidCooldowns::LoadMapIdEnableSettings(std::string const& mapIdEnableSettingsString)
 {
     std::string delimitedValue;
@@ -35,7 +63,7 @@ void ResetRaidCooldowns::LoadMapIdEnableSettings(std::string const& mapIdEnableS
     while (std::getline(mapIdEnableSettingsStream, delimitedValue, ','))
     {
         uint32 mapId = atoi(delimitedValue.c_str());
-        // LOG_INFO("module", "mod-reset-raid-cooldowns::LoadMapIdEnableSettings:MapId {}", mapId);
+        LOG_INFO("module", "mod-reset-raid-cooldowns::LoadMapIdEnableSettings:MapId {}", mapId);
         sResetRaidCooldowns->mapIdEnableSettings[mapId] = true;
     }
 }
@@ -54,7 +82,7 @@ void ResetRaidCooldowns::LoadMapIdBossIdDisableSettings(std::string const& mapId
         uint32 mapId = atoi(pairOne.c_str());
         uint8 bossId = atoi(pairTwo.c_str());
         MapIdBossIdKey key(mapId, bossId);
-        // LOG_INFO("module", "mod-reset-raid-cooldowns::LoadMapIdBossIdDisableSettings:MapId-BossId {}-{}", mapId, bossId);
+        LOG_INFO("module", "mod-reset-raid-cooldowns::LoadMapIdBossIdDisableSettings:MapId-BossId {}-{}", mapId, bossId);
         sResetRaidCooldowns->mapIdBossIdDisableSettings[key] = true;
     }
 }
@@ -66,6 +94,6 @@ bool ResetRaidCooldowns::IsMapBossEnabled(uint32 mapId, uint32 bossId)
         return false;
     }
     MapIdBossIdKey key(mapId, bossId);
-    bool isEnabled = !(sResetRaidCooldowns->mapIdBossIdDisableSettings[key]);
-    return isEnabled;
+    bool isDisabled = sResetRaidCooldowns->mapIdBossIdDisableSettings[key];
+    return !isDisabled;
 }
