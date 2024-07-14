@@ -23,8 +23,8 @@ struct Id1Id2Key
     }
 };
 
-typedef Id1Id2Key InstanceIdBossIdKey;
-typedef Id1Id2Key MapIdBossIdKey;
+using MapIdBossIdKey = Id1Id2Key;
+using InstanceIdBossIdKey = Id1Id2Key;
 
 class ResetRaidCooldowns
 {
