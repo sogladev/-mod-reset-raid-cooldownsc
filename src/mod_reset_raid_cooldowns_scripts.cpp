@@ -10,8 +10,8 @@ public:
 
     void OnAfterConfigLoad(bool /*reload*/) override
     {
-        sResetRaidCooldowns->IsEnabled = sConfigMgr->GetOption<bool>("ModResetRaidCooldowns.Enable", false);
-        sResetRaidCooldowns->CombatTimeRequiredInSeconds = sConfigMgr->GetOption<uint32>("ModResetRaidCooldowns.CombatTimeRequiredInSeconds", 30);
+        sResetRaidCooldowns->isEnabled = sConfigMgr->GetOption<bool>("ModResetRaidCooldowns.Enable", false);
+        sResetRaidCooldowns->combatTimeRequiredInSeconds = sConfigMgr->GetOption<uint32>("ModResetRaidCooldowns.CombatTimeRequiredInSeconds", 30);
         sResetRaidCooldowns->LoadMapIdEnableSettings(sConfigMgr->GetOption<std::string>("ModResetRaidCooldowns.MapIdEnableSettings", ""));
         sResetRaidCooldowns->LoadMapIdBossIdDisableSettings(sConfigMgr->GetOption<std::string>("ModResetRaidCooldowns.MapIdBossIdDisableSettings", ""));
     }

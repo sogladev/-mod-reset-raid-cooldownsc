@@ -25,8 +25,8 @@ class ResetRaidCooldowns
 public:
     static ResetRaidCooldowns* instance();
 
-    bool IsEnabled{false};
-    uint32 CombatTimeRequiredInSeconds;
+    bool isEnabled{false};
+    uint32 combatTimeRequiredInSeconds;
 
     void LoadMapIdEnableSettings(std::string const& mapIdEnableSettingsString);
     void LoadMapIdBossIdDisableSettings(std::string const& mapIdBossIdDisableSettingsString);
