@@ -12,18 +12,59 @@
 #        Description: Enable ModResetRaidCooldowns
 #        Default:     0 - Disabled
 #                     1 - Enabled
-#
+
 ModResetRaidCooldowns.Enable = 1
 
 #
 #    ModResetRaidCooldowns.CombatTimeRequiredInSeconds
-#        Description: required amount of time, in seconds, to be in combat with boss
+#        Description: Required amount of time, in seconds, to be in combat with boss
 #        Default:     30
-#
-#
 
 ModResetRaidCooldowns.CombatTimeRequiredInSeconds = 30
 
+#
+#    ModResetRaidCooldowns.DoResetArenaSpells
+#        Description: Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
+#            similarly to when you enter an arena.
+#
+#        Default:     0 - Disabled
+#                     1 - Enabled (default)
+
+ModResetRaidCooldowns.DoResetArenaSpells = 1
+
+#
+#    ModResetRaidCooldowns.DoResetPetCooldowns
+#        Description: Reset pet Cooldowns and clear their sated/exhaustion debuff
+#        Default:     0 - Disabled
+#                     1 - Enabled (default)
+
+ModResetRaidCooldowns.DoResetPetCooldowns = 1
+
+#
+#    ModResetRaidCooldowns.Spells
+#        Description: A list of spells
+#                     Example: ModResetRaidCooldowns.Spells="42650, 2062, 2894, 1122"
+#                     This example would reset the following cooldowns:
+#                     42650 army of the dead
+#                     2062 earth elemental totem
+#                     2894 fire elemental totem
+#                     1122 inferno
+#
+#        Default:   "42650, 2062, 2894, 1122" - WOTLK classic (default)
+
+ModResetRaidCooldowns.Spells = "42650, 2062, 2894, 1122"
+
+#
+#    ModResetRaidCooldowns.Categories
+#        Description: A list of Categories
+#                     Example: ModResetRaidCooldowns.Categories="26"
+#                     This example would reset Rebirth (26) for players
+#
+#        Default:   "26" - WOTLK classic (default)
+
+ModResetRaidCooldowns.Categories = "26"
+
+#
 #    ModResetRaidCooldowns.MapIdEnableSettings
 #        Description: A list of map IDs for which the module is enabled.
 #                     Example: ModResetRaidCooldowns.MapIdEnableSettings="533, 532"
@@ -32,11 +73,10 @@ ModResetRaidCooldowns.CombatTimeRequiredInSeconds = 30
 #                     Ulduar (603), Trial of the Crusader (649), Icecrown Citadel (631), Ruby Sanctum (724)
 #
 #        Default:   "533, 615, 616, 603, 649, 631, 724" - WOTLK maps (default)
-#
-#
 
 ModResetRaidCooldowns.MapIdEnableSettings = "533, 615, 616, 603, 649, 631, 724"
 
+#
 #    ModResetRaidCooldowns.MapIdBossIdDisableSettings
 #        Description: A list of mapId-bosId pairs for which resetting is disabled.
 #                     Example ModResetRaidCooldowns.MapIdBossIdDisableSettings = "615 1, 615 2, 615 3"
@@ -44,7 +84,5 @@ ModResetRaidCooldowns.MapIdEnableSettings = "533, 615, 616, 603, 649, 631, 724"
 #                     Leave empty to disable (default.)
 #
 #        Default: "615 1, 615 2, 615 3, 724 0, 724 1, 724 2, 724 3, 724 4, 724 5" (default)
-#
-#
 
 ModResetRaidCooldowns.MapIdBossIdDisableSettings = "615 1, 615 2, 615 3, 724 0, 724 1, 724 2, 724 3, 724 4, 724 5"
