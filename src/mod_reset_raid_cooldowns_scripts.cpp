@@ -41,7 +41,7 @@ public:
         LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: {} ({}-{}) id: {} old: {} new: {}", instance->GetMapName(), mapId, std::to_string(instanceId), bossId, oldState, newState);
         if (newState == IN_PROGRESS)
         {
-            sResetRaidCooldowns->SetCombatStarted(mapId, bossId);
+            sResetRaidCooldowns->SetCombatStarted(instanceId, bossId);
             LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{}", instance->GetMapName(), mapId, std::to_string(instanceId), std::to_string(instanceId), bossId);
             return;
         }
@@ -51,8 +51,12 @@ public:
             return;
         }
         bool hasRequiredTimePassed = false;
+        LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Time check");
         if (uint32 combatStartedTime = sResetRaidCooldowns->GetCombatStartedTime(instanceId, bossId))
         {
+            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Combat Time Diff required {}", sResetRaidCooldowns->combatTimeRequiredInSeconds * IN_MILLISECONDS);
+            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Combat Diff {}", GetMSTimeDiffToNow(combatStartedTime));
+
             if (GetMSTimeDiffToNow(combatStartedTime) >= (sResetRaidCooldowns->combatTimeRequiredInSeconds * IN_MILLISECONDS))
             {
                 hasRequiredTimePassed = true;
@@ -69,14 +73,17 @@ public:
             if (sResetRaidCooldowns->doResetArenaSpells)
             {
                 // Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
+                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: arena cooldowns {}", spellId);
                 player->RemoveArenaSpellCooldowns(false); // no reset pet cooldowns
             }
             for (auto const& spellId : sResetRaidCooldowns->spells)
             {
+                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: spell {}", spellId);
                 player->RemoveSpellCooldown(spellId, true);
             }
             for (auto const& categoryId : sResetRaidCooldowns->categories)
             {
+                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: category {}", categoryId);
                 player->RemoveSpellCooldown(categoryId, true);
             }
             // Remove Exhaustion and Sated from player
