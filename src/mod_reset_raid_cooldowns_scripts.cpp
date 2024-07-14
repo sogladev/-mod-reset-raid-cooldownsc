@@ -73,7 +73,7 @@ public:
             if (sResetRaidCooldowns->doResetArenaSpells)
             {
                 // Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
-                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: arena cooldowns {}", spellId);
+                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: arena cooldowns");
                 player->RemoveArenaSpellCooldowns(false); // no reset pet cooldowns
             }
             for (auto const& spellId : sResetRaidCooldowns->spells)
