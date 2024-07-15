@@ -9,18 +9,16 @@ This is a module for [AzerothCore](http://www.azerothcore.org) that removes Sate
 
 This projects hosts 2 implementations which use different methods and could, but is not recommended, be used together
 
-1. Eluna (lua): uses creature enter combat and reset hooks
-2. cpp: uses `OnBeforeSetBossState` hooks+
-
+1. cpp: uses OnBeforeSetBossState hooks
+2. Eluna (lua): uses creature enter combat and reset hooks
 
 
 https://github.com/user-attachments/assets/b401789c-4ca7-4ce1-8fa0-589444c489d4
 
 
-
 ## cpp
 
-cpp: uses `OnBeforeSetBossState` hooks
+cpp: uses OnBeforeSetBossState hooks
 
 This script only runs for instances.
 
