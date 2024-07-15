@@ -3,7 +3,7 @@
 - Latest build status with azerothcore:
 
 [![Build Status](
-https://github.com/sogladev/mod-reset-raid-cooldowns/actions/workflows/core-build.yml/badge.svg?branch=master&event=push)](https://github.com/sogladev/mod-reset-raid-cooldowns)
+https://github.com/sogladev/mod-reset-raid-cooldowns/actions/workflows/core-build.yml/badge.svg?branch=main&event=push)](https://github.com/sogladev/mod-reset-raid-cooldowns)
 
 This is a module for [AzerothCore](http://www.azerothcore.org) that removes Sated and Exhaustion debuffs, and resets player cooldowns after raid encounters to emulate how it was done in Wrath Classic
 
