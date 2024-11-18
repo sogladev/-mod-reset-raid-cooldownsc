@@ -444,20 +444,6 @@ namespace ModResetRaidCooldowns
     // 29179, // Leonid Barthalomew the Revered
     };
 
-    inline const std::unordered_set<uint32> EnabledEntriesSet(
-        ENABLED_ENTRIES, ENABLED_ENTRIES + sizeof(ENABLED_ENTRIES) / sizeof(ENABLED_ENTRIES[0])
-    );
-
-    inline bool IsEnabledForCreatureEntry(uint32 entry)
-    {
-        if (EnabledEntriesSet.find(entry) == EnabledEntriesSet.end())
-        {
-            return false;
-        }
-        return true;
-    }
-
-    //
     inline bool IsEnabledForCreatureEntry2(uint32_t entry)
     {
         return std::find(std::begin(ENABLED_ENTRIES), std::end(ENABLED_ENTRIES), entry) != std::end(ENABLED_ENTRIES);
