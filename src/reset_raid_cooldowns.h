@@ -40,16 +40,28 @@ public:
 
     std::map<uint32, bool> mapIdEnableSettings;
     std::map<MapIdBossIdKey, bool> mapIdBossIdDisableSettings;
-    std::map<InstanceIdBossIdKey, uint32> instanceIdBossIdCombatStartedTimeMap;
 
     void LoadSpellsSettings(std::string const& spellsSettingsString);
     void LoadCategoriesSettings(std::string const& categoriesSettingsString);
     void LoadMapIdEnableSettings(std::string const& mapIdEnableSettingsString);
     void LoadMapIdBossIdDisableSettings(std::string const& mapIdBossIdDisableSettingsString);
 
+    bool IsMapEnabled(uint32 mapId) const;
     bool IsMapBossEnabled(uint32 mapId, uint32 bossId) const;
+
+    // combat timer instanceId-bossId
+    std::map<InstanceIdBossIdKey, uint32> instanceIdBossIdCombatStartedTimeMap;
     void SetCombatStarted(uint32 instanceId, uint32 bossId);
+    bool HasEnoughTimePassed(uint32 instanceId, uint32 bossId) const;
     uint32 GetCombatStartedTime(uint32 instanceId, uint32 bossId) const;
+
+    // combat timer guid
+    std::map<ObjectGuid, uint32> creatureGUIDCombatStartedTimeMap;
+    void SetCombatStarted(ObjectGuid guid);
+    bool HasEnoughTimePassed(ObjectGuid guid) const;
+    uint32 GetCombatStartedTime(ObjectGuid guid) const;
+
+    void DoResetRaidCooldowns(Map* map);
 };
 
 #define sResetRaidCooldowns ResetRaidCooldowns::instance()

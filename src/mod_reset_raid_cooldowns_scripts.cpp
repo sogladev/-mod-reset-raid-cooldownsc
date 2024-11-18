@@ -3,10 +3,10 @@
  */
 #include "reset_raid_cooldowns.h"
 
-class world_reset_raid_cooldowns : public WorldScript
+class reset_raid_cooldowns_worldscript : public WorldScript
 {
 public:
-    world_reset_raid_cooldowns() : WorldScript("world_reset_raid_cooldowns") { }
+    reset_raid_cooldowns_worldscript() : WorldScript("reset_raid_cooldowns_worldscript") { }
 
     void OnAfterConfigLoad(bool /*reload*/) override
     {
@@ -21,94 +21,102 @@ public:
     }
 };
 
-class global_reset_raid_cooldowns : public GlobalScript
+class reset_raid_cooldowns_globalscript : public GlobalScript
 {
 public:
-    global_reset_raid_cooldowns() : GlobalScript("global_reset_raid_cooldowns") { }
+    reset_raid_cooldowns_globalscript() : GlobalScript("reset_raid_cooldowns_globalscript") { }
+
+    void OnAfterUpdateEncounterState(Map* map, EncounterCreditType /*type*/, uint32 /*creditEntry*/, Unit* source, Difficulty /*difficulty_fixed*/, DungeonEncounterList const* /*encounters*/, uint32 /*dungeonCompleted*/, bool /*updated*/) override
+    {
+        if (!sResetRaidCooldowns->isEnabled || !source)
+            return;
+
+        uint32 mapId = map->GetId();
+        if (!sResetRaidCooldowns->IsMapEnabled(mapId))
+            return;
+
+        LOG_INFO("module", "mod-reset-raid-cooldowns::OnAfterUpdateEncounterState: Map enabled. Checking for source: {}", source->GetEntry());
+
+        // NYI: check for source entries
+
+        if (map->IsHeroic() && map->IsNonRaidDungeon())
+        {
+            // NYI: enable config bool for heroic
+        }
+        else if (map->IsRaid())
+        {
+            sResetRaidCooldowns->DoResetRaidCooldowns(map);
+        }
+    }
 
     void OnBeforeSetBossState(uint32 bossId, EncounterState newState, EncounterState oldState, Map* instance) override
     {
         if (!sResetRaidCooldowns->isEnabled || (oldState == newState) || !instance->GetInstanceId())
-        {
             return;
-        }
+
         uint32 mapId = instance->GetId();
         uint32 instanceId = instance->GetInstanceId();
         if (!sResetRaidCooldowns->IsMapBossEnabled(mapId, bossId))
-        {
             return;
-        }
+
         LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: {} ({}-{}) id: {} old: {} new: {}", instance->GetMapName(), mapId, std::to_string(instanceId), bossId, oldState, newState);
+
         if (newState == IN_PROGRESS)
         {
             sResetRaidCooldowns->SetCombatStarted(instanceId, bossId);
             LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: store pair {} ({}-{}) pair: {}-{}", instance->GetMapName(), mapId, std::to_string(instanceId), std::to_string(instanceId), bossId);
             return;
         }
-        bool isAllowedStateChange = ((oldState == IN_PROGRESS) && (newState == DONE || newState == FAIL || newState == NOT_STARTED));
-        if (!isAllowedStateChange)
-        {
-            return;
-        }
-        bool hasRequiredTimePassed = false;
-        LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Time check");
-        if (uint32 combatStartedTime = sResetRaidCooldowns->GetCombatStartedTime(instanceId, bossId))
-        {
-            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Combat Time Diff required {}", sResetRaidCooldowns->combatTimeRequiredInSeconds * IN_MILLISECONDS);
-            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Combat Diff {}", GetMSTimeDiffToNow(combatStartedTime));
 
-            if (GetMSTimeDiffToNow(combatStartedTime) >= (sResetRaidCooldowns->combatTimeRequiredInSeconds * IN_MILLISECONDS))
-            {
-                hasRequiredTimePassed = true;
-            }
-        }
-        if (!hasRequiredTimePassed)
-        {
-            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Not enough time has passed!");
+        // newState == DONE is handled with encounter done
+        bool isAllowedStateChange = ((oldState == IN_PROGRESS) && (newState == FAIL || newState == NOT_STARTED));
+        if (!isAllowedStateChange)
             return;
-        }
-        instance->DoForAllPlayers([&](Player* player)
-        {
-            LOG_DEBUG("module", "mod-reset-raid-cooldowns::DoForAllPlayers: {}", player->GetName());
-            if (sResetRaidCooldowns->doResetArenaSpells)
-            {
-                // Remove cooldowns on spells that have less than 10 minutes of cooldown from the Player
-                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: arena cooldowns");
-                player->RemoveArenaSpellCooldowns(false); // no reset pet cooldowns
-            }
-            for (auto const& spellId : sResetRaidCooldowns->spells)
-            {
-                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: spell {}", spellId);
-                player->RemoveSpellCooldown(spellId, true);
-            }
-            for (auto const& categoryId : sResetRaidCooldowns->categories)
-            {
-                LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: category {}", categoryId);
-                player->RemoveSpellCooldown(categoryId, true);
-            }
-            // Remove Exhaustion and Sated from player
-            player->RemoveAura(SPELL_EXHAUSTION);
-            player->RemoveAura(SPELL_SATED);
-            if (sResetRaidCooldowns->doResetPetCooldowns)
-            {
-                if (Pet* pet = player->GetPet())
-                {
-                    LOG_DEBUG("module", "mod-reset-raid-cooldowns::DoForAllPlayers::Pet: {}", pet->GetName());
-                    // Remove pet cooldowns
-                    for (CreatureSpellCooldowns::const_iterator itr2 = pet->m_CreatureSpellCooldowns.begin(); itr2 != pet->m_CreatureSpellCooldowns.end(); ++itr2)
-                        player->SendClearCooldown(itr2->first, pet);
-                    pet->m_CreatureSpellCooldowns.clear();
-                    // Remove Exhaustion and Sated from pet
-                    player->RemoveAura(SPELL_EXHAUSTION);
-                    player->RemoveAura(SPELL_SATED);
-                }
-            }
-        });
+
+        if (!sResetRaidCooldowns->HasEnoughTimePassed(instanceId, bossId))
+            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Not enough time has passed!");
+        else
+            sResetRaidCooldowns->DoResetRaidCooldowns(instance);
+    }
+};
+
+class reset_raid_cooldowns_unitscript : public UnitScript
+{
+public:
+    reset_raid_cooldowns_unitscript() : UnitScript("reset_raid_cooldowns_unitscript") { }
+
+    void OnUnitEnterCombat(Unit* unit, Unit* /*victim*/) override
+    {
+        if (!sResetRaidCooldowns->isEnabled)
+            return;
+
+        uint32 entry = unit->GetEntry();
+        // NYI: check if creature entry is enabled
+
+        if (uint32 instanceId = unit->GetMap()->GetInstanceId())
+            sResetRaidCooldowns->SetCombatStarted(unit->GetGUID());
+    }
+
+    void OnUnitEnterEvadeMode(Unit* unit, uint8 evadeReason) override
+    {
+        if (!sResetRaidCooldowns->isEnabled)
+            return;
+
+        uint32 entry = unit->GetEntry();
+        // NYI: check if creature entry is enabled
+
+        ObjectGuid guid = unit->GetGUID();
+        sResetRaidCooldowns->SetCombatStarted(guid);
+        if (!sResetRaidCooldowns->HasEnoughTimePassed(guid))
+            LOG_DEBUG("module", "mod-reset-raid-cooldowns::OnBeforeSetBossState: Not enough time has passed!");
+        else
+            sResetRaidCooldowns->DoResetRaidCooldowns(unit->GetMap());
     }
 };
 
 void AddSC_reset_raid_cooldowns()
 {
-    new global_reset_raid_cooldowns();
-    new world_reset_raid_cooldowns();
+    new reset_raid_cooldowns_globalscript();
+    new reset_raid_cooldowns_worldscript();
+    new reset_raid_cooldowns_unitscript();
 }
