@@ -322,7 +322,7 @@ namespace ModResetRaidCooldowns
         // 1748, // Highlord Bolvar Fordragon
         12397, // Lord Kazzak
         // 15550, // Attumen the Huntsman
-        15608, // Medivh
+        // 15608, // Medivh
         // 15687, // Moroes
         // 15690, // Prince Malchezaar
         // 15691, // The Curator
@@ -363,7 +363,7 @@ namespace ModResetRaidCooldowns
         18728, // Doom Lord Kazzak
         // 18780, // The Curator Transform Visual
         // 18805, // High Astromancer Solarian
-        18831, // High King Maulgar
+        // 18831, // High King Maulgar
         // 18832, // Krosh Firehand
         // 18834, // Olm the Summoner
         // 18835, // Kiggler the Crazed
